@@ -16,14 +16,15 @@ def upload_events(events):
         
     try:
         service = build('calendar', 'v3', credentials=creds)
-        batch = service.new_batch_http_request(callback=print)
+        batch = service.new_batch_http_request()
         for e in events:
-            print(e['recurrence'])
             batch.add(service.events().insert(calendarId='primary', body=e))
         batch.execute()
 
     except HttpError as error:
-        print('An error occurred: %s' % error)
+        print(f'An error occurred: {error}')
+        if input('Retry (Y/N)? ').lower() == 'y':
+            upload_events(events)
 
 def main():
     time_zone = tzlocal.get_localzone_name()
@@ -49,7 +50,7 @@ def main():
         print(f"""{e['summary']} at {e['location']} on {e['billiejoe_rep_pattern']}""")
     print('\n')
 
-    if input('Upload y/n? ').lower() == 'y':
+    if input('Upload (Y/N)? ').lower() == 'y':
         upload_events(events)
         print('Done!')
     else:

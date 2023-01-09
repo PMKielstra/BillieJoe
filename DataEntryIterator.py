@@ -14,7 +14,7 @@ class DataEntryIterator:
     def __input_class(self, summary):
         class_data = {
             'summary': summary,
-            'location': input('Location (real or virtual): '),
+            'location': input('Location or link: '),
         }
         rep_pattern = input(f'Repetition pattern ({DAY_ABBREVIATIONS}): ')
         class_data['billiejoe_rep_pattern'] = rep_pattern
@@ -52,7 +52,7 @@ class DataEntryIterator:
         return self
     
     def __next__(self):
-        summary = input('Name (or input nothing to stop): ')
+        summary = input('Name (or leave blank to stop inputting classes): ')
         if summary == '':
             raise StopIteration
         return self.__input_class(summary)
