@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from dateutil.rrule import rrule, WEEKLY
+from dateutil.rrule import rrule, DAILY
 from dataclasses import dataclass
 
 DAY_ABBREVIATIONS = 'MTWHFSU'
+ICAL_ABBREVIATIONS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 
 @dataclass
 class DataEntryIterator:
@@ -21,7 +22,7 @@ class DataEntryIterator:
             int_val for (int_val, char_val) in enumerate(list(DAY_ABBREVIATIONS)) if char_val in rep_pattern
         ]
         class_data['recurrence'] = [
-            str(rrule(WEEKLY, until=self.end_date, byweekday=rep_integers)).split()[1] # rrule includes a DTSTART clause, which isn't necessary for our purposes
+            f"""RRULE:FREQ=WEEKLY;UNTIL={self.end_date.year:04d}{self.end_date.month:02d}{self.end_date.day:02d}T000000Z;INTERVAL=1;WKST=MO;BYDAY={','.join([ICAL_ABBREVIATIONS[i] for i in rep_integers])}"""
         ]
         start_hour = input('Start time (HH:MM): ')
         duration = input('Duration (hours): ')

@@ -16,8 +16,9 @@ def upload_events(events):
         
     try:
         service = build('calendar', 'v3', credentials=creds)
-        batch = service.new_batch_http_request()
+        batch = service.new_batch_http_request(callback=print)
         for e in events:
+            print(e['recurrence'])
             batch.add(service.events().insert(calendarId='primary', body=e))
         batch.execute()
 
@@ -45,7 +46,7 @@ def main():
     print(f'Semester begins {str(start_date.date())}')
     print(f'Semester ends {end_date.date()}')
     for e in events:
-        print(f'{e.summary} at {e.location} on {e.billiejoe_rep_pattern}')
+        print(f"""{e['summary']} at {e['location']} on {e['billiejoe_rep_pattern']}""")
     print('\n')
 
     if input('Upload y/n? ').lower() == 'y':
