@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from dateutil.rrule import rrule, WEEKLY
 from dataclasses import dataclass
 
+DAY_ABBREVIATIONS = 'MTWHFSU'
+
 @dataclass
 class DataEntryIterator:
     start_date: datetime
@@ -13,10 +15,10 @@ class DataEntryIterator:
             'summary': summary,
             'location': input('Location (real or virtual): '),
         }
-        rep_pattern = input('Repetition pattern (MTWHFSU): ')
+        rep_pattern = input(f'Repetition pattern ({DAY_ABBREVIATIONS}): ')
         class_data['billiejoe_rep_pattern'] = rep_pattern
         rep_integers = [
-            int_val for (int_val, char_val) in enumerate(list('MTWHFSU')) if char_val in rep_pattern
+            int_val for (int_val, char_val) in enumerate(list(DAY_ABBREVIATIONS)) if char_val in rep_pattern
         ]
         class_data['recurrence'] = [
             str(rrule(WEEKLY, until=self.end_date, byweekday=rep_integers)).split()[1] # rrule includes a DTSTART clause, which isn't necessary for our purposes

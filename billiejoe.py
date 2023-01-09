@@ -1,5 +1,6 @@
 from dateutil.parser import parse
 import tzlocal
+from pytz import timezone
 
 from DataEntryIterator import DataEntryIterator
 
@@ -8,8 +9,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
-
-TIME_ZONE = tzlocal.get_localzone_name()
 
 def upload_events(events):
     flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
@@ -26,17 +25,21 @@ def upload_events(events):
         print('An error occurred: %s' % error)
 
 def main():
-    new_time_zone = input(f'Using time zone {TIME_ZONE} -- press enter to accept or input new time zone here: ')
+    time_zone = tzlocal.get_localzone_name()
+
+    new_time_zone = input(f'Using time zone {time_zone} -- press enter to accept or input new time zone here: ')
     if new_time_zone != '':
-        TIME_ZONE = new_time_zone
+        time_zone = new_time_zone
+
+    pytz_time_zone = timezone(time_zone)
 
     semester_begins = input(f'Semester begins on: ')
     semester_ends = input(f'Semester ends on: ')
 
-    start_date = parse(semester_begins + ' ' + TIME_ZONE)
-    end_date = parse(semester_ends + ' ' + TIME_ZONE)
+    start_date = pytz_time_zone.localize(parse(semester_begins))
+    end_date = pytz_time_zone.localize(parse(semester_ends))
 
-    events = list(DataEntryIterator(start_date, end_date, TIME_ZONE))    
+    events = list(DataEntryIterator(start_date, end_date, time_zone))    
 
     print('\n')
     print(f'Semester begins {str(start_date.date())}')
